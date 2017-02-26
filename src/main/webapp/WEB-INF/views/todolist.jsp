@@ -63,7 +63,7 @@
             for (i = 0; i < sts.length; i++) {
                 a = sts[i];
                 if (a.checked) {
-                    s = s + "status[]="+a.value + '&';
+                    s = s + "status[]=" + a.value + '&';
                 }
             }
 
@@ -80,7 +80,22 @@
 <h1>ToDo List</h1>
 
 <c:forEach items="${listStatus}" var="stasus">
-    <input type="checkbox" class="fsts" name="${stasus.name}" value="${stasus.id}" checked>${stasus.name}
+    <c:choose>
+        <c:when test="${stasus.selected}">
+            <input type="checkbox"
+                   class="fsts"
+                   name="${stasus.name}"
+                   value="${stasus.id}"
+                   checked>${stasus.name}
+        </c:when>
+        <c:otherwise>
+            <input type="checkbox"
+                   class="fsts"
+                   name="${stasus.name}"
+                   value="${stasus.id}">${stasus.name}
+        </c:otherwise>
+
+    </c:choose>
 </c:forEach>
 
 <button id="reloadBtn" onclick="reloadPage()">Update page</button>
@@ -143,7 +158,5 @@
     </tr>
 
 </table>
-
-
 </body>
 </html>
