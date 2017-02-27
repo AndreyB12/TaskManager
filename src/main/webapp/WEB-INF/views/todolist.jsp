@@ -56,19 +56,59 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
-        function reloadPage() {
+
+        $(document).ready(
+            function () {
+                loadData();
+            });
+
+
+        function loadData() {
             var s, i, sts, a
-            sts = document.getElementsByClassName("fsts")
-            s = document.location.search.split('?')[0];
+            sts = document.getElementsByClassName("fsts");
+             s = "datatable?";
             for (i = 0; i < sts.length; i++) {
                 a = sts[i];
                 if (a.checked) {
                     s = s + "status[]=" + a.value + '&';
                 }
             }
-
-            document.location.search = s;
+            $('#datatable').load(s + '#datatable');
         }
+
+        $(document).on('click', '#testb', function (event) {
+            event.preventDefault();
+            alert("test");
+        });
+        $(document).on('submit', '#editform', function (event) {
+            event.preventDefault();
+            var $form = $(event.parent),
+                id = $form.find("input[name='id']").val(),
+                text = $form.find("input[name='text']").val(),
+                status = $form.find("input[name='status']").val(),
+                url = $form.attr("action");
+
+            // Send the data using post
+            var posting = $.post(url, {id: term, text: text, status: status});
+            // Put the results in a div
+            posting.done(function (data) {
+                loadData();
+            });
+        });
+
+        $(document).on('click', '#remove', function (event) {
+            event.preventDefault();
+            var $form = $(this),
+                url = $form.attr("value");
+
+            // Send the data using post
+            var posting = $.post(url);
+            // Put the results in a div
+            posting.done(function (data) {
+                loadData();
+            });
+        });
+
     </script>
 </head>
 <c:url var="addAction" value="/todolist/add"/>
@@ -98,65 +138,15 @@
     </c:choose>
 </c:forEach>
 
-<button id="reloadBtn" onclick="reloadPage()">Update page</button>
+<button id="reloadBtn" onclick="loadData()">Update page</button>
 
 <br/>
 <br/>
 
-<table class="tg">
-    <tr>
-        <th width="80">ID</th>
-        <th width="200">ToDo</th>
-        <th width="80">Status</th>
-        <th width="80"></th>
-        <th width="80"></th>
-    </tr>
-    <c:forEach items="${listToDo}" var="toDoTask">
-        <tr>
-            <form:form action="${addAction}" commandName="toDoTask">
-                <td align="center"><form:input path="id"
-                                               readonly="true"
-                                               size="8"
-                                               value="${toDoTask.id}"
-                                               style="border: none"
-                                               align="center"/>
-                </td>
-                <td><form:input path="text" value="${toDoTask.text}" style="border: none"/></td>
-                <td><form:select path="status" style="border: none">
-                    <c:forEach items="${listStatus}" var="status">
-                        <c:choose>
-                            <c:when test="${status.id == toDoTask.status}">
-                                <form:option value="${status.id}"
-                                             selected="selected">${status.name}</form:option></c:when>
-                            <c:otherwise>
-                                <form:option value="${status.id}">${status.name}</form:option></c:otherwise>
-                        </c:choose>
-                    </c:forEach>
-                </form:select></td>
-                <td align="center"><input type="submit"
-                                          value="<spring:message text="Edit Task"/>"/></td>
-            </form:form>
-            <form:form action="remove/${toDoTask.id}" method="get">
-                <td align="center">
-                    <input type="submit" value="Delete"/></td>
-            </form:form>
-        </tr>
-    </c:forEach>
-    <tr>
-        <form:form action="${addAction}" commandName="toDoTask">
-            <td></td>
-            <td><form:input path="text" style="border: none" placeholder="new ToDo text here..."/></td>
-            <td><form:select path="status" style="border: none">
-                <c:forEach items="${listStatus}" var="status">
-                    <form:option value="${status.id}">${status.name}</form:option>
-                </c:forEach>
-            </form:select></td>
-            <td></td>
-            <td align="center"><input type="submit"
-                                      value="<spring:message text="Add Task"/>"/></td>
-        </form:form>
-    </tr>
+<div id="parentdt">
+    <div id="datatable">
+    </div>
+</div>
 
-</table>
 </body>
 </html>
