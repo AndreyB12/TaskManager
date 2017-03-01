@@ -53,6 +53,21 @@ public class ToDoServiceImpl implements ToDoService {
     }
 
     @Transactional
+    public List<ToDoTask> listToDoNext(int startId, int count, int[] statuses) {
+        return this.toDoDao.listToDoNext(startId, count, statuses);
+    }
+
+
+    @Transactional
+    public int countRows(int[] statuses) {
+        return this.toDoDao.countToDo(statuses);
+    }
+    @Transactional
+    public int countRowsBefore(int id, int[] statuses) {
+        return this.toDoDao.countToDoBeforeId(id,statuses);
+    }
+
+    @Transactional
     public List<Status> listStatus() {
         return this.toDoDao.listStatus();
     }

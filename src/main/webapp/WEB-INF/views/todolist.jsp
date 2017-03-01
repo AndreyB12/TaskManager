@@ -10,7 +10,6 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ page session="false" %>
 <html>
-
 <head>
     <title>ToDoList</title>
     <style type="text/css">
@@ -62,44 +61,43 @@
                 loadData();
             });
 
-
         function loadData() {
-            var s, i, sts, a
+            loadDataNextId(0);
+        }
+
+        function loadDataNextId(firstId) {
+            var s, i, sts, a, rowsOnPage
             sts = document.getElementsByClassName("fsts");
-             s = "datatable?";
+            rowsOnPage = document.getElementById("rowsOnPg").value;
+            s = "datatable?";
+
             for (i = 0; i < sts.length; i++) {
                 a = sts[i];
                 if (a.checked) {
-                    s = s + "status[]=" + a.value + '&';
+                    s = s + "status=" + a.value + '&';
                 }
             }
+            s += "rowsOnPage=" + rowsOnPage;
+            s += "&firstId=" + firstId;
+
             $('#datatable').load(s + '#datatable');
         }
 
-        $(document).on('click', '#testb', function (event) {
-            event.preventDefault();
-            alert("test");
-        });
-        $(document).on('submit', '#editform', function (event) {
-            event.preventDefault();
-            var $form = $(event.parent),
-                id = $form.find("input[name='id']").val(),
-                text = $form.find("input[name='text']").val(),
-                status = $form.find("input[name='status']").val(),
-                url = $form.attr("action");
 
-            // Send the data using post
-            var posting = $.post(url, {id: term, text: text, status: status});
-            // Put the results in a div
-            posting.done(function (data) {
-                loadData();
-            });
+        $(document).on('click', '#link_first', function (event) {
+            event.preventDefault();
+            loadDataNextId(0);
+        });
+        $(document).on('click', '#link_next', function (event) {
+            event.preventDefault();
+            var firstId = document.getElementById("lastId").value;
+            loadDataNextId(firstId);
         });
 
         $(document).on('click', '#remove', function (event) {
             event.preventDefault();
-            var $form = $(this),
-                url = $form.attr("value");
+            var a = this;
+            var url = a.href;
 
             // Send the data using post
             var posting = $.post(url);
@@ -109,13 +107,46 @@
             });
         });
 
+        $(document).on('click', '#addnewtask', function (event) {
+            event.preventDefault();
+            var $form = $(this),
+                url = "todolist/add",
+                id = "0",
+                text = document.getElementById("newtext").value,
+                status = document.getElementById("newstatus").value;
+
+
+            // Send the data using post
+            var posting = $.post(url, {'id': id, 'text': text, 'status': status});
+            // Put the results in a div
+            posting.done(function (data) {
+                loadData();
+            });
+        });
+
+        $(document).on('click', '.editbtn', function (event) {
+            event.preventDefault();
+            var $form = $(this),
+                url = "todolist/add",
+                id = this.id,
+                text = document.getElementById("text_" + id).value,
+                status = document.getElementById("status_" + id).value;
+
+
+            // Send the data using post
+            var posting = $.post(url, {'id': id, 'text': text, 'status': status});
+            // Put the results in a div
+            posting.done(function (data) {
+                loadData();
+            });
+        });
     </script>
 </head>
 <c:url var="addAction" value="/todolist/add"/>
 <c:url var="reloadAction" value="/todolist"/>
 <c:url var="deleteAction" value="/"/>
 
-
+<body>
 <br/>
 <h1>ToDo List</h1>
 
@@ -137,7 +168,9 @@
 
     </c:choose>
 </c:forEach>
-
+<br/>
+<a>Rows on page: </a>
+<input type="number" id="rowsOnPg" value="10" style="width:10mm">
 <button id="reloadBtn" onclick="loadData()">Update page</button>
 
 <br/>

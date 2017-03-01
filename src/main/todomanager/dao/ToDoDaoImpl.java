@@ -2,6 +2,7 @@ package todomanager.dao;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -52,20 +53,70 @@ public class ToDoDaoImpl implements ToDoDao {
 
     @SuppressWarnings("unchecked")
     public List<ToDoTask> listToDo(int[] statuses) {
-        String query = "from ToDoTask";
+        return listToDoNext(0, 0, statuses);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ToDoTask> listToDoNext(int id, int count, int[] statuses) {
+        String query = "from ToDoTask where id>=:id";
+        if (statuses != null && statuses.length > 0) {
+            query = query + " and ( status = " + statuses[0];
+            for (int i = 1; i < statuses.length; i++) {
+                query = query + " or status = " + statuses[i];
+            }
+            query = query + ")";
+        }
+
+        Session session = this.sessionFactory.getCurrentSession();
+        Query query1 = session.createQuery(query);
+        query1.setParameter("id", id);
+
+        if (count > 0) query1.setMaxResults(count);
+
+        List<ToDoTask> toDoList = query1.list();
+
+        for (ToDoTask toDoTask : toDoList) {
+            logger.info("ToDoTask successfully loaded. ToDoTask: " + toDoTask);
+        }
+        return toDoList;
+    }
+
+    @SuppressWarnings("unchecked")
+    public int countToDo() {
+        return countToDo(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public int countToDo(int[] statuses) {
+        Session session = this.sessionFactory.getCurrentSession();
+
+        String query = "select count(*) from ToDoTask";
         if (statuses != null && statuses.length > 0) {
             query = query + " where status = " + statuses[0];
             for (int i = 1; i < statuses.length; i++) {
                 query = query + " or status = " + statuses[i];
             }
         }
-        Session session = sessionFactory.getCurrentSession();
-        List<ToDoTask> toDoList = session.createQuery(query).list();
+        int cnt = ((Number) session.createQuery(query).uniqueResult()).intValue();
+        return cnt;
+    }
 
-        for (ToDoTask toDoTask : toDoList) {
-            logger.info("ToDoTask successfully loaded. ToDoTask: " + toDoTask);
+    @SuppressWarnings("unchecked")
+    public int countToDoBeforeId(int id, int[] statuses) {
+        Session session = this.sessionFactory.getCurrentSession();
+
+        String query = "select count(*) from ToDoTask where id<:id ";
+        if (statuses != null && statuses.length > 0) {
+            query = query + " and( status = " + statuses[0];
+            for (int i = 1; i < statuses.length; i++) {
+                query = query + " or status = " + statuses[i];
+            }
+            query += ")";
         }
-        return toDoList;
+        Query query1 = session.createQuery(query);
+        query1.setParameter("id", id);
+        int cnt = ((Number) query1.uniqueResult()).intValue();
+        return cnt;
     }
 
     @SuppressWarnings("unchecked")

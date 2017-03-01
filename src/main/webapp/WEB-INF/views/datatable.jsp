@@ -6,57 +6,65 @@
 <table class="tg">
     <tr>
         <th width="60">ID</th>
-        <th width="200">ToDo</th>
+        <th width="250">ToDo</th>
         <th width="80">Status</th>
         <th width="80"></th>
         <th width="80"></th>
     </tr>
     <c:forEach items="${listToDo}" var="toDoTask">
         <tr>
-            <form:form action="${addAction}" commandName="toDoTask" method="post">
-                <td align="center"><form:input path="id"
-                                               readonly="true"
-                                               size="8"
-                                               value="${toDoTask.id}"
-                                               style="border: none"
-                                               align="center"/>
-                </td>
-                <td><form:input path="text" value="${toDoTask.text}" style="border: none"/></td>
-                <td><form:select path="status" style="border: none">
-                    <c:forEach items="${listStatus}" var="status">
-                        <c:choose>
-                            <c:when test="${status.id == toDoTask.status}">
-                                <form:option value="${status.id}"
-                                             selected="selected">${status.name}</form:option></c:when>
-                            <c:otherwise>
-                                <form:option value="${status.id}">${status.name}</form:option></c:otherwise>
-                        </c:choose>
-                    </c:forEach>
-                </form:select></td>
-                <td align="center"><input id="editform" type="submit"
-                                          value="<spring:message text="Edit Task"/>"/>
-                    <button id="testb">test</button>
-                </td>
-            </form:form>
+            <td align="center"><input id="id_${toDoTask.id}"
+                                      readonly="true"
+                                      size="8"
+                                      value="${toDoTask.id}"
+                                      style="border: none"
+                                      align="center"/>
+            </td>
+            <td><input id="text_${toDoTask.id}" value="${toDoTask.text}" style="border: none;width:100%"/></td>
+            <td><select id="status_${toDoTask.id}" style="border: none">
+                <c:forEach items="${listStatus}" var="status">
+                    <c:choose>
+                        <c:when test="${status.id == toDoTask.status}">
+                            <option value="${status.id}"
+                                    selected="selected">${status.name}</option>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="${status.id}">${status.name}</option>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+            </select></td>
+            <td align="center">
+                <button id="${toDoTask.id}" class="editbtn">Edit Task</button>
+            </td>
             <td align="center">
                 <button id="remove" value="remove/${toDoTask.id}">Delete</button>
             </td>
         </tr>
     </c:forEach>
+
+    <!--   //Last row for adding new task-->
     <tr>
-        <form:form action="${addAction}" commandName="toDoTask">
-            <td></td>
-            <td><form:input path="text" style="border: none" placeholder="new ToDo text here..."/></td>
-            <td><form:select path="status" style="border: none">
-                <c:forEach items="${listStatus}" var="status">
-                    <form:option value="${status.id}">${status.name}</form:option>
-                </c:forEach>
-            </form:select></td>
-            <td></td>
-            <td align="center"><input type="submit"
-                                      value="<spring:message text="Add Task"/>"/></td>
-        </form:form>
+        <td></td>
+        <td><input id="newtext" style="border: none;width:100%" placeholder="new ToDo text here..."/></td>
+        <td><select id="newstatus" style="border: none;width:100%" placeholder="New">
+            <c:forEach items="${listStatus}" var="status">
+                <option value="${status.id}">${status.name}</option>
+            </c:forEach>
+        </select></td>
+        <td></td>
+        <td align="center">
+            <button id="addnewtask">Add Task</button>
+        </td>
     </tr>
 </table>
 
+<a id="link_first" href="">First<< </a>
+<a id="link_prev" href="">Previous<<</a>
+<a>Page ${view.currentPage} of ${view.pages}</a>
+<a id="link_next" href="">>>Next</a>
+<a id="link_last" href="">>>Last</a>
+
+
+<input id="lastId" hidden value="${view.lastId+1}"/>
 </html>

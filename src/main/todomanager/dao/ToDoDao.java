@@ -4,7 +4,6 @@ import todomanager.model.Status;
 import todomanager.model.ToDoTask;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by butkoav on 24.02.2017.
@@ -19,6 +18,14 @@ public interface ToDoDao {
     public ToDoTask getToDoById(int id);
 
     public List<ToDoTask> listToDo(int[] statuses);
+
+    public List<ToDoTask> listToDoNext(int id, int count, int[] statuses);
+
+    public int countToDo();
+
+    public int countToDo(int[] statuses);
+
+    public int countToDoBeforeId(int id, int[] statuses);
 
     public List<Status> listStatus();
 

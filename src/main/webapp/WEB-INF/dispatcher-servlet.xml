@@ -39,6 +39,7 @@
             <list>
                 <value>todomanager.model.ToDoTask</value>
                 <value>todomanager.model.Status</value>
+                <value>todomanager.model.View</value>
             </list>
         </property>
         <property name="hibernateProperties">
