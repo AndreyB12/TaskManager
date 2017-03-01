@@ -3,6 +3,24 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ page session="false" %>
 <html>
+<c:if test="${view.currentPage==1}">
+    <button id="link_first" disabled>First<<</button>
+    <button id="link_prev" disabled>Previous<<</button>
+</c:if>
+<c:if test="${view.currentPage>1}">
+    <button id="link_first">First<<</button>
+    <button id="link_prev">Previous<<</button>
+</c:if>
+<a>Page ${view.currentPage} of ${view.pages}</a>
+<c:if test="${view.currentPage<view.pages}">
+    <button id="link_next">>>Next</button>
+    <button id="link_last">>>Last</button>
+</c:if>
+<c:if test="${view.currentPage==view.pages}">
+    <button id="link_next" disabled>>>Next</button>
+    <button id="link_last" disabled>>>Last</button>
+</c:if>
+
 <table class="tg">
     <tr>
         <th width="60">ID</th>
@@ -59,12 +77,6 @@
     </tr>
 </table>
 
-<a id="link_first" href="">First<< </a>
-<a id="link_prev" href="">Previous<<</a>
-<a>Page ${view.currentPage} of ${view.pages}</a>
-<a id="link_next" href="">>>Next</a>
-<a id="link_last" href="">>>Last</a>
-
-
-<input id="lastId" hidden value="${view.lastId+1}"/>
+<input id="firstId" hidden value="${view.firstId}"/>
+<input id="lastId" hidden value="${view.lastId}"/>
 </html>

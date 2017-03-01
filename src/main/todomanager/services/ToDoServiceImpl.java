@@ -53,8 +53,18 @@ public class ToDoServiceImpl implements ToDoService {
     }
 
     @Transactional
+    public List<ToDoTask> listLastToDo(int count, int[] statuses) {
+        return this.toDoDao.listLastToDo(count,statuses);
+    }
+
+    @Transactional
     public List<ToDoTask> listToDoNext(int startId, int count, int[] statuses) {
         return this.toDoDao.listToDoNext(startId, count, statuses);
+    }
+
+    @Transactional
+    public List<ToDoTask> listToDoPrev(int startId, int count, int[] statuses) {
+        return this.toDoDao.listToDoPrev(startId, count, statuses);
     }
 
 
@@ -62,9 +72,10 @@ public class ToDoServiceImpl implements ToDoService {
     public int countRows(int[] statuses) {
         return this.toDoDao.countToDo(statuses);
     }
+
     @Transactional
     public int countRowsBefore(int id, int[] statuses) {
-        return this.toDoDao.countToDoBeforeId(id,statuses);
+        return this.toDoDao.countToDoBeforeId(id, statuses);
     }
 
     @Transactional

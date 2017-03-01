@@ -19,7 +19,11 @@ public interface ToDoDao {
 
     public List<ToDoTask> listToDo(int[] statuses);
 
+    public List<ToDoTask> listLastToDo(int count, int[] statuses);
+
     public List<ToDoTask> listToDoNext(int id, int count, int[] statuses);
+
+    public List<ToDoTask> listToDoPrev(int id, int count, int[] statuses);
 
     public int countToDo();
 

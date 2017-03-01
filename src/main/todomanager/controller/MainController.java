@@ -11,6 +11,7 @@ import todomanager.model.ToDoTask;
 import todomanager.model.View;
 import todomanager.services.ToDoService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -47,37 +48,37 @@ public class MainController {
     public String getDataTable(@RequestParam(value = "status", required = true) String[] statuses,
                                @RequestParam(value = "rowsOnPage", required = true) int rowsOnPage,
                                @RequestParam(value = "firstId", required = true) int firstId,
+                               @RequestParam(value = "direction", required = true) String direction,
                                Model model) {
         View view = new View();
         view.setRowsOnPage(rowsOnPage);
         view.setStatuses(getSelectedStatuses(statuses));
-        view.setCurrentPage(1);
         view.setFirstId(firstId);
         view.setRows(toDoService.countRows(view.getStatuses()));
-        view.setRowsBefore(toDoService.countRowsBefore(view.getFirstId(), view.getStatuses()));
-        view.calcPagesCount(true);
-        List<ToDoTask> toDoTasks = this.toDoService.listToDoNext(view.getFirstId(), view.getRowsOnPage(), view.getStatuses());
+        List<ToDoTask> toDoTasks = null;
+        if (direction.equalsIgnoreCase("forward")) {
+            view.setRowsBefore(toDoService.countRowsBefore(view.getFirstId(), view.getStatuses()));
+            toDoTasks = this.toDoService.listToDoNext(view.getFirstId(), view.getRowsOnPage(), view.getStatuses());
+        }
+        if (direction.equalsIgnoreCase("backward")) {
+            view.setRowsBefore(toDoService.countRowsBefore(view.getFirstId(), view.getStatuses()) - rowsOnPage);
+            toDoTasks = this.toDoService.listToDoPrev(view.getFirstId(), view.getRowsOnPage(), view.getStatuses());
+            Collections.reverse(toDoTasks);
+        }
+        if (direction.equalsIgnoreCase("lastpage")) {
+            int lastPageRows = (view.getRows() % rowsOnPage == 0) ? rowsOnPage : view.getRows() % rowsOnPage;
+            view.setRowsBefore(view.getRows() - lastPageRows);
+            toDoTasks = this.toDoService.listLastToDo(lastPageRows, view.getStatuses());
+            Collections.reverse(toDoTasks);
+        }
         if (toDoTasks.size() > 0) {
             view.setFirstId(toDoTasks.get(0).getId());
             view.setLastId(toDoTasks.get(toDoTasks.size() - 1).getId());
         }
+        view.calcPagesCount(true);
         model.addAttribute("view", view);
         model.addAttribute("listStatus", getStatuses(view.getStatuses()));
         model.addAttribute("listToDo", toDoTasks);
-        return "datatable";
-    }
-
-
-    @RequestMapping(value = "datatable/next")
-    public String getFirstPage(@RequestParam(value = "status", required = false) String[] statuses,
-                               @RequestParam(value = "rowsOnPage", required = false) int rowsOnPage,
-                               Model model) {
-
-        int[] sts = getSelectedStatuses(statuses);
-        View view = new View();
-        model.addAttribute("view", view);
-        model.addAttribute("listStatus", getStatuses(sts));
-        model.addAttribute("listToDo", this.toDoService.listToDo(getSelectedStatuses(statuses)));
         return "datatable";
     }
 

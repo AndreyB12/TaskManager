@@ -62,10 +62,15 @@
             });
 
         function loadData() {
-            loadDataNextId(0);
+            loadDataById(0, "forward");
         }
 
-        function loadDataNextId(firstId) {
+        function reload() {
+            var firstId = document.getElementById("firstId").value;
+            loadDataById(firstId, "forward");
+        }
+
+        function loadDataById(firstId, direction) {
             var s, i, sts, a, rowsOnPage
             sts = document.getElementsByClassName("fsts");
             rowsOnPage = document.getElementById("rowsOnPg").value;
@@ -79,31 +84,42 @@
             }
             s += "rowsOnPage=" + rowsOnPage;
             s += "&firstId=" + firstId;
-
+            s += "&direction=" + direction;
             $('#datatable').load(s + '#datatable');
         }
 
 
         $(document).on('click', '#link_first', function (event) {
             event.preventDefault();
-            loadDataNextId(0);
+            loadDataById(0, "forward");
+        });
+        $(document).on('click', '#link_prev', function (event) {
+            event.preventDefault();
+            var firstId = parseInt(document.getElementById("firstId").value);
+            loadDataById(firstId, "backward");
         });
         $(document).on('click', '#link_next', function (event) {
             event.preventDefault();
-            var firstId = document.getElementById("lastId").value;
-            loadDataNextId(firstId);
+            var firstId = parseInt(document.getElementById("lastId").value) + 1;
+            loadDataById(firstId, "forward");
         });
+        $(document).on('click', '#link_last', function (event) {
+            event.preventDefault();
+            var firstId = parseInt(document.getElementById("lastId").value) + 1;
+            loadDataById(firstId, "lastpage");
+        });
+
 
         $(document).on('click', '#remove', function (event) {
             event.preventDefault();
             var a = this;
-            var url = a.href;
+            var url = a.value;
 
             // Send the data using post
             var posting = $.post(url);
             // Put the results in a div
             posting.done(function (data) {
-                loadData();
+                reload();
             });
         });
 
@@ -120,7 +136,7 @@
             var posting = $.post(url, {'id': id, 'text': text, 'status': status});
             // Put the results in a div
             posting.done(function (data) {
-                loadData();
+                reload();
             });
         });
 
@@ -137,7 +153,7 @@
             var posting = $.post(url, {'id': id, 'text': text, 'status': status});
             // Put the results in a div
             posting.done(function (data) {
-                loadData();
+                //   loadData();
             });
         });
     </script>

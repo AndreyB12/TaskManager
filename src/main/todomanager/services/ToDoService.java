@@ -18,8 +18,10 @@ public interface ToDoService {
     public ToDoTask getToDoById(int id);
 
     public List<ToDoTask> listToDo(int[] statuses);
+    public List<ToDoTask> listLastToDo(int count,int[] statuses);
 
     public List<ToDoTask> listToDoNext(int startId, int count, int[] statuses);
+    public List<ToDoTask> listToDoPrev(int startId, int count, int[] statuses);
 
     public int countRows(int[] statuses);
 

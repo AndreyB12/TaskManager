@@ -57,6 +57,30 @@ public class ToDoDaoImpl implements ToDoDao {
     }
 
     @SuppressWarnings("unchecked")
+    public List<ToDoTask> listLastToDo(int count,int[] statuses) {
+        String query = "from ToDoTask ";
+        if (statuses != null && statuses.length > 0) {
+            query = query + " where ( status = " + statuses[0];
+            for (int i = 1; i < statuses.length; i++) {
+                query = query + " or status = " + statuses[i];
+            }
+            query = query + ") order by id desc";
+        }
+
+        Session session = this.sessionFactory.getCurrentSession();
+        Query query1 = session.createQuery(query);
+
+        if (count > 0) query1.setMaxResults(count);
+
+        List<ToDoTask> toDoList = query1.list();
+
+        for (ToDoTask toDoTask : toDoList) {
+            logger.info("ToDoTask successfully loaded. ToDoTask: " + toDoTask);
+        }
+        return toDoList;
+    }
+
+    @SuppressWarnings("unchecked")
     public List<ToDoTask> listToDoNext(int id, int count, int[] statuses) {
         String query = "from ToDoTask where id>=:id";
         if (statuses != null && statuses.length > 0) {
@@ -81,6 +105,31 @@ public class ToDoDaoImpl implements ToDoDao {
         return toDoList;
     }
 
+
+    @SuppressWarnings("unchecked")
+    public List<ToDoTask> listToDoPrev(int id, int count, int[] statuses) {
+        String query = "from ToDoTask where id<:id";
+        if (statuses != null && statuses.length > 0) {
+            query = query + " and ( status = " + statuses[0];
+            for (int i = 1; i < statuses.length; i++) {
+                query = query + " or status = " + statuses[i];
+            }
+            query = query + ") order by id desc";
+        }
+
+        Session session = this.sessionFactory.getCurrentSession();
+        Query query1 = session.createQuery(query);
+        query1.setParameter("id", id);
+
+        if (count > 0) query1.setMaxResults(count);
+
+        List<ToDoTask> toDoList = query1.list();
+
+        for (ToDoTask toDoTask : toDoList) {
+            logger.info("ToDoTask successfully loaded. ToDoTask: " + toDoTask);
+        }
+        return toDoList;
+    }
     @SuppressWarnings("unchecked")
     public int countToDo() {
         return countToDo(null);
@@ -105,7 +154,7 @@ public class ToDoDaoImpl implements ToDoDao {
     public int countToDoBeforeId(int id, int[] statuses) {
         Session session = this.sessionFactory.getCurrentSession();
 
-        String query = "select count(*) from ToDoTask where id<:id ";
+        String query = "select count(*) from ToDoTask where id<=:id ";
         if (statuses != null && statuses.length > 0) {
             query = query + " and( status = " + statuses[0];
             for (int i = 1; i < statuses.length; i++) {
