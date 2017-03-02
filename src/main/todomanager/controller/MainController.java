@@ -30,12 +30,12 @@ public class MainController {
         this.toDoService = toDoService;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET,produces = "text/plain;charset=UTF-8")
     public String index(Model model) {
         return "redirect:todolist";
     }
 
-    @RequestMapping(value = "todolist", method = RequestMethod.GET)
+    @RequestMapping(value = "todolist", method = RequestMethod.GET,produces = "text/plain;charset=UTF-8")
     public String todoList(@RequestParam(value = "status", required = false) String[] statuses,
                            Model model) {
 
@@ -44,7 +44,7 @@ public class MainController {
     }
 
 
-    @RequestMapping(value = "datatable")
+    @RequestMapping(value = "datatable",produces = "text/plain;charset=UTF-8")
     public String getDataTable(@RequestParam(value = "status", required = true) String[] statuses,
                                @RequestParam(value = "rowsOnPage", required = true) int rowsOnPage,
                                @RequestParam(value = "firstId", required = true) int firstId,
@@ -76,6 +76,7 @@ public class MainController {
             view.setLastId(toDoTasks.get(toDoTasks.size() - 1).getId());
         }
         view.calcPagesCount(true);
+
         model.addAttribute("view", view);
         model.addAttribute("listStatus", getStatuses(view.getStatuses()));
         model.addAttribute("listToDo", toDoTasks);
